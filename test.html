@@ -1,0 +1,16 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<title>JustJS Testpage</title>
+<script type="text/javascript" src="Just.js"></script>
+</head>
+<body>
+<p id="test" style="position: relative; width: 500px; left: 3px;">Hello world!</p>
+<script type="text/javascript">
+    JustJS.ready(function() {
+        JustJS.fx.animate(document.getElementById("test"), { left: '+=50', opacity: '-=0.3' }, { duration: 500 })
+    })
+</script>
+</body>
+</html>
