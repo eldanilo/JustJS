@@ -1,16 +1,17 @@
-// Base.js, version 1.1a, Copyright 2006-2010, Dean Edwards, License: http://www.opensource.org/licenses/mit-license.php
+/**
+ * Base.js, version 1.1a, Copyright 2006-2010, Dean Edwards
+ * License: http://www.opensource.org/licenses/mit-license.php
+ */ 
 var Base=function(){};Base.extend=function(t,e){var n=Base.prototype.extend;Base._prototyping=!0;var r=new this;n.call(r,t),r.base=function(){},delete Base._prototyping;var o=r.constructor,i=r.constructor=function(){if(!Base._prototyping)if(this._constructing||this.constructor==i)this._constructing=!0,o.apply(this,arguments),delete this._constructing;else if(null!==arguments[0])return(arguments[0].extend||n).call(arguments[0],r)};return i.ancestor=this,i.extend=this.extend,i.forEach=this.forEach,i.implement=this.implement,i.prototype=r,i.toString=this.toString,i.valueOf=function(t){return"object"==t?i:o.valueOf()},n.call(i,e),"function"==typeof i.init&&i.init(),i},Base.prototype={extend:function(t,e){if(arguments.length>1){var n=this[t];if(n&&"function"==typeof e&&(!n.valueOf||n.valueOf()!=e.valueOf())&&/\bbase\b/.test(e)){var r=e.valueOf();e=function(){var t=this.base||Base.prototype.base;this.base=n;var e=r.apply(this,arguments);return this.base=t,e},e.valueOf=function(t){return"object"==t?e:r},e.toString=Base.toString}this[t]=e}else if(t){var o=Base.prototype.extend;Base._prototyping||"function"==typeof this||(o=this.extend||o);for(var i={toSource:null},s=["constructor","toString","valueOf"],a=Base._prototyping?0:1;u=s[a++];)t[u]!=i[u]&&o.call(this,u,t[u]);for(var u in t)i[u]||o.call(this,u,t[u])}return this}},Base=Base.extend({constructor:function(){this.extend(arguments[0])}},{ancestor:Object,version:"1.1",forEach:function(t,e,n){for(var r in t)void 0===this.prototype[r]&&e.call(n,t[r],r,t)},implement:function(){for(var t=0;t<arguments.length;t++)"function"==typeof arguments[t]?arguments[t](this.prototype):this.prototype.extend(arguments[t]);return this},toString:function(){return String(this.valueOf())}});
 
 /**
- * JustJS is a work in progress javascript framework
+ * JustJS, version 0.1, Copyright 2014 by Daniel Schlessmann <info@eldanilo.de>
+ * License: http://www.opensource.org/licenses/mit-license.php
  * 
- * Version 0.1 (c) 2014 by Daniel Schlessmann <info@eldanilo.de>, all rights reserved
+ * Please have a look at the README for more information.
  */
 var JustJS = {
-    /**
-     * Document Loaded/Ready Handling
-     * https://github.com/jfriend00/docReady
-     */
+    // Document Loaded/Ready Handling, originally from: https://github.com/jfriend00/docReady
     readyLoader: {
         listeners:  [],
         fired:      false,
@@ -59,12 +60,8 @@ var JustJS = {
             JustJS.readyLoader.registered = true;
         }
     },
-    /**
-     * Holds all transformation and animation stuff
-     * 
-     * originally from:
-     * http://gabrieleromanato.name/javascript-implementing-the-fadein-and-fadeout-methods-without-jquery/
-     */
+    // Holds all transformation and animation stuff, concept originally from:
+    // http://gabrieleromanato.name/javascript-implementing-the-fadein-and-fadeout-methods-without-jquery/
     fx: {
         worker: {
             animate: function(options) {
@@ -138,11 +135,11 @@ var JustJS = {
                         case 'bottom':
                         case 'left':
                         pixels  = true;
-                        start   = JustJS.dom.getPropertyAsPixels( element, property );
+                        start   = JustJS.dom.getPropertyAsPixelValue( element, property );
                         break;
 
                         case 'opacity':
-                        start   = JustJS.dom.getPropertyAsPixels( element, property );
+                        start   = JustJS.dom.getPropertyAsPixelValue( element, property );
                         break;
                     }
 
@@ -245,7 +242,7 @@ var JustJS = {
             return retVal;
         },
         // source: http://javascript.info/tutorial/styles-and-classes-getcomputedstyle
-        __ie_getCurrentStylePropertyAsPixels: function( element, prop ) {
+        __ie_getCurrentStylePropertyAsPixelValue: function( element, prop ) {
             var pixels = /^\d+(px)$/i;
             var value = element.currentStyle[prop] || 0;
 
@@ -268,12 +265,12 @@ var JustJS = {
 
             return value;
         },
-        getPropertyAsPixels: function( element, prop ) {
+        getPropertyAsPixelValue: function( element, prop ) {
             if(window.getComputedStyle) {
                 var styles  = getComputedStyle( element, null );
                 return parseInt(styles[prop].match(/-?\d+(\.\d+)?/)[0], 10);
             } else {
-                return __ie_getCurrentStylePropertyAsPixels( element, prop );
+                return __ie_getCurrentStylePropertyAsPixelValue( element, prop );
             }
         },
         getPropertyValue: function( element, prop ) {
@@ -296,10 +293,10 @@ var JustJS = {
                     width -= parseInt(styles.paddingRight, 10);
                 } else {
                     // IE < 9.0
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderLeftWidth'), 10);
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderRightWidth'), 10);
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'paddingLeft'), 10);
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'paddingRight'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderLeftWidth'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderRightWidth'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'paddingLeft'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'paddingRight'), 10);
                 }
             }
             return width;
@@ -314,24 +311,16 @@ var JustJS = {
                     width -= parseInt(styles.borderRightWidth, 10);
                 } else {
                     // IE < 9.0
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderLeftWidth'), 10);
-                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderRightWidth'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderLeftWidth'), 10);
+                    width -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderRightWidth'), 10);
                 }
             }
             return width;
         },
-        /**
-         * Returns the outer width of a dom element (width+padding+border+optionally margin)
-         * 
-         * @param  {object}     element The DOM element in question
-         * @param  {boolean}    element The DOM element in question
-         * @return {int}
-         */
-        outerWidth: function( element, includeMargins ) {
-            var width = element.offsetWidth ? element.offsetWidth : 0;
+        outerWidth: function( element, includeMargin ) {
+            var styles, width = element.offsetWidth ? element.offsetWidth : 0;
 
             if(width === 0) {
-                var styles;
                 if(window.getComputedStyle) {
                     styles  = getComputedStyle( element, null );
                 } else {
@@ -359,6 +348,18 @@ var JustJS = {
                     }
                 }
             }
+
+            if(includeMargin === true) {
+                if(!styles) {
+                    if(window.getComputedStyle) {
+                        styles  = getComputedStyle( element, null );
+                    } else {
+                        styles  = element.currentStyle;
+                    }
+                }
+                width += parseInt(styles.marginLeft, 10);
+                width += parseInt(styles.marginRight, 10);
+            }
             return width;
         },
         height: function( element ) {
@@ -373,10 +374,10 @@ var JustJS = {
                     height -= parseInt(styles.paddingBottom, 10);
                 } else {
                     // IE < 9.0
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderTopWidth'), 10);
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderBottomWidth'), 10);
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'paddingTop'), 10);
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'paddingBottom'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderTopWidth'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderBottomWidth'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'paddingTop'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'paddingBottom'), 10);
                 }
             }
             return height;
@@ -391,14 +392,14 @@ var JustJS = {
                     height -= parseInt(styles.borderBottomWidth, 10);
                 } else {
                     // IE < 9.0
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderTopWidth'), 10);
-                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixels(element, 'borderBottomWidth'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderTopWidth'), 10);
+                    height -= parseInt(JustJS.dom.__ie_getCurrentStylePropertyAsPixelValue(element, 'borderBottomWidth'), 10);
                 }
             }
             return height;
         },
         outerHeight: function( element, includeMargin ) {
-            var height = element.offsetHeight ? element.offsetHeight : 0;
+            var styles, height = element.offsetHeight ? element.offsetHeight : 0;
 
             if(height === 0) {
                 var styles;
@@ -429,6 +430,18 @@ var JustJS = {
                     }
                 }
             }
+
+            if(includeMargin === true) {
+                if(!styles) {
+                    if(window.getComputedStyle) {
+                        styles  = getComputedStyle( element, null );
+                    } else {
+                        styles  = element.currentStyle;
+                    }
+                }
+                width += parseInt(styles.marginTop, 10);
+                width += parseInt(styles.marginBottom, 10);
+            }
             return height;
         },
         offset: function( element ) {
@@ -454,7 +467,7 @@ var JustJS = {
             return;
         },
         removeClass: function( element, className ) {
-            var result  = false;
+            var r, result  = false;
             
             var regex   = new RegExp('(^|\\s+)'+className+'(\\s+|$)', 'g');
             while((r = regex.exec(element.className)) !== null) {

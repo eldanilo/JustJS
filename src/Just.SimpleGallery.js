@@ -1,3 +1,7 @@
+/**
+ * JustJS SimpleGallery, version 0.1, Copyright 2014 by Daniel Schlessmann <info@eldanilo.de>
+ * License: http://www.opensource.org/licenses/mit-license.php
+ */
 JustJS.SimpleGallery = {
     /**
      * Holds galleries as array in the SimpleGallery Object
@@ -408,7 +412,7 @@ JustJS.SimpleGallery.ImageCarousel = JustJS.SimpleGallery.GalleryDomObject.exten
             // parse dom objects to images and format them correctly
             if(this.objects.length > 0 && this.gallery.images.length === 0) {
                 for(var i = 0; i < this.objects.length; i++) {
-                    if(this.objects[i].nodeName = 'LI') {
+                    if(this.objects[i].nodeName === 'LI') {
                         this.objects[i].style.position = 'absolute';
                         this.objects[i].style.left  = JustJS.dom.innerWidth( this.container ) + 'px';
                         this.objects[i].style.width = JustJS.dom.innerWidth( this.container ) + 'px';
@@ -430,10 +434,15 @@ JustJS.SimpleGallery.ImageCarousel = JustJS.SimpleGallery.GalleryDomObject.exten
                         var title = this.objects[i].querySelector('span.title'); 
                         var image = this.objects[i].querySelector('img');
                         if(image && title) {
-
                             image.style.position   = 'relative';
                             image.style.top        = '50%';
-                            image.style.marginTop  = -parseInt(Math.ceil((image.height/2)), 10)+'px';
+                            image.GalleryDomObject = this
+                            if(image.complete) {
+                                image.style.marginTop  = -parseInt(Math.ceil((image.height/2)), 10)+'px';
+                            } else {
+                                image.style.marginTop  = -parseInt(Math.ceil((this.containerHeight/2)), 10)+'px';
+                                image.onload  = this.imageLoadedSetSizeHandler;
+                            }
                             if(i === this.active) {
                                 image.style.zIndex = 3;
                             }
@@ -490,11 +499,20 @@ JustJS.SimpleGallery.ImageCarousel = JustJS.SimpleGallery.GalleryDomObject.exten
             }
         }
     },
+    imageLoadedSetSizeHandler: function( e ) {
+        if(!this.style.marginTop) {
+            this.style.marginTop = -parseInt(Math.ceil((this.height/2)), 10)+'px';
+            if(this.height > this.GalleryDomObject.containerHeight) {
+                this.GalleryDomObject.container.style.height = this.height + 'px';
+                this.GalleryDomObject.containerHeight = this.height;
+            }
+        }
+    },
     imageLoadedHandler: function( e ) {
         // this => img
         var i       = this.SimpleGalleryIndex;
         var that    = this;
-        if(/\w*loading\w*/i.test(this.SimpleGalleryImage.parent.className)) {
+        if( JustJS.dom.hasClass( this.SimpleGalleryImage.parent, 'loading') ) {
             this.SimpleGalleryImage.parent.appendChild(this.SimpleGalleryImage.object);
             JustJS.dom.removeClass( this.SimpleGalleryImage.parent, 'loading');
             if(this.GalleryDomObject.gallery.showLabels) {
@@ -619,7 +637,7 @@ JustJS.SimpleGallery.ImageCarousel = JustJS.SimpleGallery.GalleryDomObject.exten
         }
     },
     startAutoSwitching: function() {
-        that = this;
+        var that = this;
         that.timer = setInterval(function() {
             var current = that.active;
             var next    = (current === that.gallery.images.length - 1) ? 0 : ++current;

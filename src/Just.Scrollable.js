@@ -1,7 +1,6 @@
 /**
- * JustJS Scrollable
- *
- * This components transforms every properly formatted DOM-Element into a scrollable stage
+ * JustJS Scrollable, version 0.1, Copyright 2014 by Daniel Schlessmann <info@eldanilo.de>
+ * License: http://www.opensource.org/licenses/mit-license.php
  */
 JustJS.Scrollable = {
     Stage: Base.extend({
@@ -155,7 +154,7 @@ JustJS.Scrollable = {
         },
     }),
     init: function() {
-        elements = document.querySelectorAll('.scrollable.wrapper');
+        var elements = document.querySelectorAll('.scrollable.wrapper');
         for(var i = 0; i < elements.length; i++) {
             new JustJS.Scrollable.Stage( elements[i] );
         }

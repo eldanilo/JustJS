@@ -1,0 +1,20 @@
+JustJS is a work-in-progress and more-or-less lightweight javascript framework.
+
+-----
+
+The main purpose was to have a simple framework for animations and DOM manupilating stuff - without jQuery. It uses mostly native methods and a few external tools (eg Base.js) to keep things simple. On the downside it lacks compatibility with older IE versions (<= 8.0).
+
+I have used it in a few client projects without problems, but I still consider it more or less experimental and mainly use it for learning purposes and to experiment with stuff. ;-) 
+
+I also had no time to create a "real" documentation for it, yet.
+
+As stated in the License, the software is provided "as is" without warranty of any kind. So use at your own risk and please test it thoroughly before even considering to use it in a production environment!
+
+-----
+
+To load the Framework, just load the Just.js file.
+
+JustJS              - the framework object
+JustJS.ready()      - a method to fire a callback when the dom is loaded
+JustJS.fx           - animation handling
+JustJS.dom          - dom properties and manipulation
