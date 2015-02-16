@@ -36,7 +36,7 @@ JustJS.Scrollable = {
 
                         // button: previous
                         var previous        = document.createElement('a');
-                        previous.className  = 'button previous inactive test';
+                        previous.className  = 'button previous inactive';
                         previous.innerHTML  = '<span class="text">&laquo;</span>';
                         previous.Stage = this;
                         this.buttons[0]     = previous; 
@@ -46,7 +46,7 @@ JustJS.Scrollable = {
                         
                         // button: next
                         var next            = document.createElement('a');
-                        next.className      = 'button next active test';
+                        next.className      = 'button next active';
                         next.innerHTML      = '<span class="text">&raquo;</span>';
                         next.Stage          = this;
                         this.buttons[1]     = next; 
@@ -108,11 +108,10 @@ JustJS.Scrollable = {
                                 if(node.Stage.currentIdx === 0) {
                                     JustJS.dom.removeClass(node.Stage.buttons[0], 'active');
                                     JustJS.dom.addClass(node.Stage.buttons[0], 'inactive');
-                                } else {
-                                    if(JustJS.dom.hasClass(node.Stage.buttons[1], 'inactive')) {
-                                        JustJS.dom.removeClass(node.Stage.buttons[1], 'inactive');
-                                        JustJS.dom.addClass(node.Stage.buttons[1], 'active');
-                                    }
+                                }
+                                if(JustJS.dom.hasClass(node.Stage.buttons[1], 'inactive')) {
+                                    JustJS.dom.removeClass(node.Stage.buttons[1], 'inactive');
+                                    JustJS.dom.addClass(node.Stage.buttons[1], 'active');
                                 }
                             }
                         }
@@ -139,11 +138,11 @@ JustJS.Scrollable = {
                                 if(node.Stage.currentIdx+visible === node.Stage.scrollable.children.length) {
                                         JustJS.dom.removeClass(node.Stage.buttons[1], 'active');
                                         JustJS.dom.addClass(node.Stage.buttons[1], 'inactive');
-                                } else {
-                                    if(JustJS.dom.hasClass(node.Stage.buttons[0], 'inactive')) {
-                                        JustJS.dom.removeClass(node.Stage.buttons[0], 'inactive');
-                                        JustJS.dom.addClass(node.Stage.buttons[0], 'active');
-                                    }
+
+                                }
+                                if(JustJS.dom.hasClass(node.Stage.buttons[0], 'inactive')) {
+                                    JustJS.dom.removeClass(node.Stage.buttons[0], 'inactive');
+                                    JustJS.dom.addClass(node.Stage.buttons[0], 'active');
                                 }
                             }
                         }

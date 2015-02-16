@@ -91,10 +91,40 @@ var JustJS = {
             linear: function(progress) {
                 return progress;
             },
-            quadratic: function(progress) {
+            inQuad: function(progress) {
                 return Math.pow(progress, 2);
             },
-            swing: function(progress) {
+            outQuad: function(progress) {
+                return Math.sqrt(progress);
+            },
+            inOutQuad: function(progress) {
+                if(progress < 0.5) {
+                    return Math.pow(progress*2, 2) / 2;
+                }
+                return Math.sqrt(progress/0.5-1)*0.5 + 0.5;
+            },
+            bounceOut: function(progress) {
+                for (var a = 0, b = 1, result; 1; a += b, b /= 2) {
+                    if (progress >= (7 - 4 * a) / 11) {
+                        return -Math.pow((11 - 6 * a - 11 * progress) / 4, 2) + Math.pow(b, 2);
+                    }
+                }
+            },
+            bounceIn: function(progress) {
+                return 1 - JustJS.fx.easing.bounceOut(1-progress);
+            },
+            backOut: function(progress) {
+                var s = 1.70158;
+                return Math.pow(progress, 2) * ((s+1)*progress-s);
+            },
+            backIn: function(progress) {
+                var s = 1.70158;
+                if(progress > 0) {
+                    return --progress*progress*((s+1)*progress+s)+1; 
+                }
+                return 0;
+            },
+            /*swing: function(progress) {
                 return 0.5 - Math.cos(progress * Math.PI) / 2;
             },
             circ: function(progress) {
@@ -102,17 +132,10 @@ var JustJS = {
             },
             back: function(progress, x) {
                 return Math.pow(progress, 2) * ((x + 1) * progress - x);
-            },
-            bounce: function(progress) {
-                for (var a = 0, b = 1, result; 1; a += b, b /= 2) {
-                    if (progress >= (7 - 4 * a) / 11) {
-                        return -Math.pow((11 - 6 * a - 11 * progress) / 4, 2) + Math.pow(b, 2);
-                    }
-                }
-            },
-            elastic: function(progress, x) {
+            },*/
+            /*elastic: function(progress, x) {
                 return Math.pow(2, 10 * (progress - 1)) * Math.cos(20 * Math.PI * x / 3 * progress);
-            }
+            }*/
         },
         animate: function( element, properties, options) {
             // use swing as default
@@ -454,49 +477,85 @@ var JustJS = {
         },
         hasClass: function( element, className ) {
             var regex   = new RegExp('(^|\\s+)'+className+'(\\s+|$)', 'g');
+            if(typeof element.className !== 'string') {
+                // try attribute
+                var attr = element.getAttribute('class');
+                return attr ? regex.test( attr ) : false;
+            }
             return regex.test(element.className);
         },
         toggleClass: function( element, className ) {
             if( !JustJS.dom.removeClass(element, className) ) {
-                if(element.className.length > 0) {
-                    element.className += ' '+className;
+                var target = (typeof element.className !== 'string') ?  element.getAttribute('class') : element.className;
+                if(!target) {
+                    target = '';
+                }
+
+                if(target.length > 0) {
+                    target += ' '+className;
                 } else {
-                    element.className = className;
+                    target = className;
+                }
+
+                if(typeof element.className !== 'string') {
+                    element.setAttribute('class', target);
+                } else {
+                    element.className = target;
                 }
             }
             return;
         },
         removeClass: function( element, className ) {
-            var r, result  = false;
-            
+            var r, result   = false;
+            var target      = (typeof element.className !== 'string') ?  element.getAttribute('class') : element.className;
+            if(!target) {
+                target = '';
+            }
+
             var regex   = new RegExp('(^|\\s+)'+className+'(\\s+|$)', 'g');
-            while((r = regex.exec(element.className)) !== null) {
+            while((r = regex.exec(target)) !== null) {
                 // beginning of string
                 if(r[0].length === 0 && r[2].length > 0) {
-                    element.className = 
-                        element.className.substring(r[0].length);
+                    target = 
+                        target.substring(r[0].length);
                 // end of string
                 } else if(r[0].length > 0 && r[2].length === 0) {
-                    element.className = 
-                        element.className.substring(0, r.index);
+                    target = 
+                        target.substring(0, r.index);
                 // middle of string
                 } else {
-                    element.className = 
-                        element.className.substring(0, r.index)
-                        + element.className.substring((r.index+r[0].length-1));
+                    target = 
+                        target.substring(0, r.index)
+                        + target.substring((r.index+r[0].length-1));
                 }
                 if(!result) {
                     result = true;
+                }
+            }
+            if(result) {
+                if(typeof element.className !== 'string') {
+                    element.setAttribute('class', target);
+                } else {
+                    element.className = target;
                 }
             }
             return result;
         },
         addClass: function( element, className ) {
             if( !JustJS.dom.hasClass( element, className ) ) {
-                if(element.className.length > 0) {
-                    element.className += ' '+className;
+                var target = (typeof element.className !== 'string') ?  element.getAttribute('class') : element.className;
+                if(!target) {
+                    target = '';
+                }
+                if(target.length > 0) {
+                    target += ' '+className;
                 } else {
-                    element.className = className;
+                    target = className;
+                }
+                if(typeof element.className !== 'string') {
+                    element.setAttribute('class', target);
+                } else {
+                    element.className = target;
                 }
             }
         }

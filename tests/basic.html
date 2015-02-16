@@ -6,10 +6,26 @@
 <script type="text/javascript" src="../src/Just.js"></script>
 </head>
 <body>
-<p id="test" style="position: relative; width: 500px; left: 3px;">Hello world!</p>
+<p id="test1" style="position: relative; width: 500px; left: 3px;">I'm just plain simple JavaScript!</p>
+<p id="test2" style="position: relative; width: 500px; left: 3px;">I'm just plain simple JavaScript!</p>
+<p id="test3" style="position: relative; width: 500px; left: 3px;">I'm just plain simple JavaScript!</p>
+<p id="test4" style="position: relative; width: 500px; left: 3px;">I'm just plain simple JavaScript!</p>
+<p id="test5" style="position: relative; width: 500px; left: 3px;">I'm just plain simple JavaScript!</p>
+<p id="test6">Sample Text</p>
+<p id="test7" class="sample">Sample Text</p>
+<p id="test8" class="sample">Sample Text</p>
+<p id="test9" class="basic sample">Sample Text</p>
 <script type="text/javascript">
     JustJS.ready(function() {
-        JustJS.fx.animate(document.getElementById("test"), { left: '+=50', opacity: '-=0.5' }, { duration: 750 })
+        JustJS.fx.animate(document.getElementById("test1"), { left: '+=300', opacity: '-=0.5' }, { duration: 750 });
+        JustJS.fx.animate(document.getElementById("test2"), { left: '+=300' }, { duration: 750, easing: 'inOutQuad' });
+        JustJS.fx.animate(document.getElementById("test3"), { left: '+=300' }, { duration: 750, easing: 'bounceIn' });
+        JustJS.fx.animate(document.getElementById("test4"), { left: '+=300' }, { duration: 750, easing: 'backOut' });
+        JustJS.fx.animate(document.getElementById("test5"), { left: '+=300' }, { duration: 750, easing: 'backIn' });
+        JustJS.dom.addClass(document.getElementById("test6"), 'sample');
+        JustJS.dom.toggleClass(document.getElementById("test7"), 'sample');
+        JustJS.dom.removeClass(document.getElementById("test8"), 'sample');
+        JustJS.dom.removeClass(document.getElementById("test9"), 'sample');
     });
 </script>
 </body>
