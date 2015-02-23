@@ -138,7 +138,6 @@ var JustJS = {
             }*/
         },
         animate: function( element, properties, options) {
-            // use swing as default
             if(!options.easing) {
                 options.easing = 'linear';
             }
@@ -240,6 +239,119 @@ var JustJS = {
                     }
                 }
             );
+        },
+        transform: function( element, properties, options ) {
+            if(!options.easing) {
+                options.easing = 'linear';
+            }
+            var rawValue = options.useAttributes ? element.getAttribute('transform') : element.style.transform;
+            if(!rawValue) {
+                rawValue = '';
+            }
+            
+            for(var property in properties) {
+                // give each property-animation its own closure
+                (function(property) {
+                    var worker  = {
+                        duration:   options.duration,
+                        delta:      function(progress) {
+                            progress = this.progress;
+                            return JustJS.fx.easing[options.easing](progress);
+                        },
+                        complete:   function() {
+                            if(typeof options.complete === 'function') {
+                                options.complete();
+                            }
+                        }
+                    };
+
+                    switch(property) {
+                        case 'translate':
+                        var initial = rawValue.match(/translate\((-?\d+(\.\d+)?)(px)?(([\,\s])(-?\d+)(\.\d+)?(px)?)?\)/i);
+                        var last    = initial ? initial[0] : '';
+                        // set start
+                        var startX  = initial&&initial[1] ? parseInt(initial[1]) : 0;
+                        var startY  = initial&&initial[4] ? parseInt(initial[6]) : 0;
+                        // add decimals
+                        if(initial && initial[2]) {
+                            startX = (startX < 0 ? -parseFloat(initial[2]) : parseFloat(initial[2]) ) + startX;
+                        }
+                        if(initial && initial[7]) {
+                            startY = (startY < 0 ? -parseFloat(initial[7]) : parseFloat(initial[7]) ) + startY;
+                        }
+                        //set target values - X
+                        var toX     = 0;
+                        if(properties[property].x) {
+                            if(typeof(properties[property].x === 'number')) {
+                                toX = properties[property].x;
+                            } else {
+                                toX = properties[property].x.match(/(\+|\-)?\=?(\d+)(\.\d+)/);
+                            }
+                        }
+                        // set target values - Y
+                        var toY     = 0;
+                        if(properties[property].y) {
+                            if(typeof(properties[property].y === 'number')) {
+                                toY = properties[property].y;
+                            } else {
+                                toY =  properties[property].y.match(/(\+|\-)?\=?(\d+)(\.\d+)/);
+                            }
+                        }
+                        // setup worker                        
+                        worker.step = function( delta ) {
+                            var nextX   = 0;
+                            var nextY   = 0;
+                            // X
+                            if(toX[1] && toX[1] === '+') {
+                                nextX += (startX + delta * ((toX[3] ? parseFloat(toX[3]) : 0) + (toX[2] ? parseInt(toX[2]) : toX)));
+                            } else if(toX[1]) {
+                                nextX += (startX - delta * ((toX[3] ? parseFloat(toX[3]) : 0) + (toX[2] ? parseInt(toX[2]) : toX)));
+                            } else {
+                                nextX += (startX + (((toX[3] ? parseFloat(toX[3]) : 0) + (toX[2] ? parseInt(toX[2]): toX)) - startX) * delta);
+                            }
+                            // Y
+                            if(toY[1] && toY[1] === '+') {
+                                nextY += (startY + delta * ((toY[3] ? parseFloat(toY[3]) : 0) + (toY[2] ? parseInt(toY[2]) : toY)));
+                            } else if(toY[1]) {
+                                nextY += (startY - delta * ((toY[3] ? parseFloat(toY[3]) : 0) + (toY[2] ? parseInt(toY[2]) : toY)));
+                            } else {
+                                nextY += (startY + (((toY[3] ? parseFloat(toY[3]) : 0) + (toY[2] ? parseInt(toY[2]): toY)) - startY) * delta);
+                            }
+                            // we have to use toFixed, because IE silently rounds to 3 decimals
+                            nextX = ( nextX.toFixed(3).replace(/\.?0+$/, '') ) + (options.useAttributes ? '' : 'px');
+                            nextY = ( nextY.toFixed(3).replace(/\.?0+$/, '') ) + (options.useAttributes ? '' : 'px');
+                            // build next value
+                            var next = 'translate(' + nextX + ((!options.useAttributes || nextY !== '0' && nextY !== '0px') ? (!options.useAttributes ? ',' : ' ' ) + nextY : '' ) +')';
+
+                            var now = options.useAttributes ? element.getAttribute('transform') : element.style.transform;
+                            if(now) {
+                                if(options.useAttributes) {
+                                    if(last.length > 0) {
+                                        element.setAttribute('transform', now.replace(last, next));
+                                    } else {
+                                        element.setAttribute('transform', now + ' ' + next);
+                                    }
+                                } else {
+                                    if(last.length > 0) {
+                                        element.style.transform = now.replace(last, next);
+                                    } else {
+                                        element.style.transform = now + ' ' + next;
+                                    }
+                                }
+                            } else {
+                                if(options.useAttributes) {
+                                    element.setAttribute('transform', next);
+                                } else {
+                                    element.style.transform = next;
+                                }
+                            }
+                            last = next;
+                        };
+                        break;
+                    }
+                    JustJS.fx.worker.animate(worker);
+                })(property);
+            }
         }
     },
     /**
