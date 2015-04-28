@@ -671,5 +671,67 @@ var JustJS = {
                 }
             }
         }
+    },
+    /**
+     * Session/Cookie Handling
+     *
+     * Sources:
+     * https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie
+     */
+    session: {
+        /**
+         * Returns the value of a cookie
+         * @param  {string} name cookie name
+         * @return {string}
+         */
+        getCookie: function( name ) {
+            if( !name ) {
+                return null;
+            }
+            return decodeURIComponent(document.cookie.replace( new RegExp('(?:(?:^|.*;)\\s*'+encodeURIComponent(name).replace(/[\-\.\+\*]/g,"\\$&")+'\\s*\\=\\s*([^;]*).*$|^.*$)'), "$1" )) || null;
+        },
+        /**
+         * Sets a cookie
+         * @param {string} name    name of the cookie
+         * @param {string} value   value of the cookie
+         * @param {mixed}  expires lifetime of the cookie, can be either a number, a string or a date
+         * @param {string} path    cookie-path
+         * @param {string} domain  cookie-domain
+         * @param {string} secure  switch to toggle https only
+         */
+        setCookie: function( name, value, expires, path, domain, secure) {
+            if(name && !/^(?:expires|max\-age|path|domain|secure)$/i.test(name)) {
+                var expiration = '';
+                if(expires) {
+                    switch(expires.constructor) {
+                        case Number:
+                            expiration = expires === Infinity ? '; expires=Fri, 31 Dec 9999 23:59:59 GMT' : '; max-age=' + expires;
+                            break;
+                        case String:
+                            expiration = '; expires=' + expires;
+                            break;
+                        case Date:
+                            expiration = "; expires=" + expires.toUTCString();
+                            break;
+                    }
+                }
+                document.cookie = encodeURIComponent(name)+'='+encodeURIComponent(value) + expiration + (domain ? '; domain='+domain : '') + (path ? '; path='+path : '') + (secure ? '; secure' : '');
+                return true;
+            }
+        },
+        /**
+         * Removes a cookie, if existing
+         * @param  {string} name   name of the cookie
+         * @param  {string} path   cookie-path
+         * @param  {string} domain cookie-path
+         * @return {boolean}       true, if the cookie was successfully removed
+         */
+        removeCookie: function( name, path, domain ) {
+            if(name && (new RegExp('(?:^|;\\s*)'+encodeURIComponent(name).replace(/[\-\.\+\*]/g,'\\$&')+'\\s*\\=')).test(document.cookie)) {
+                document.cookie = encodeURIComponent(name) + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT' + (domain ? '; domain='+domain : '') + (path ? '; path='+path : '');
+                return true;
+            }
+            return false;
+        },
     }
 };
